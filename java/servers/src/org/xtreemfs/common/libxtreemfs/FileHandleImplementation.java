@@ -24,10 +24,12 @@ import org.xtreemfs.common.libxtreemfs.exceptions.XtreemFSException;
 import org.xtreemfs.foundation.buffer.ReusableBuffer;
 import org.xtreemfs.foundation.logging.Logging;
 import org.xtreemfs.foundation.logging.Logging.Category;
+import org.xtreemfs.foundation.pbrpc.client.PBRPCException;
 import org.xtreemfs.foundation.pbrpc.client.RPCAuthentication;
 import org.xtreemfs.foundation.pbrpc.client.RPCResponse;
 import org.xtreemfs.foundation.pbrpc.client.RPCResponseAvailableListener;
 import org.xtreemfs.foundation.pbrpc.generatedinterfaces.RPC.Auth;
+import org.xtreemfs.foundation.pbrpc.generatedinterfaces.RPC.ErrorType;
 import org.xtreemfs.foundation.pbrpc.generatedinterfaces.RPC.POSIXErrno;
 import org.xtreemfs.foundation.pbrpc.generatedinterfaces.RPC.UserCredentials;
 import org.xtreemfs.osd.replication.ObjectSet;
@@ -433,20 +435,48 @@ public class FileHandleImplementation implements FileHandle, AdminFileHandle {
                     // replicas.
                     uuidIterator = osdUuidIterator;
                 }
-
+                OSDWriteResponse response = null;
                 final ReusableBuffer writeDataBuffer = operations.get(j).getReqData();
-                OSDWriteResponse response = RPCCaller.<writeRequest, OSDWriteResponse> syncCall(SERVICES.OSD,
-                        userCredentials, authBogus, volumeOptions, uuidResolver, uuidIterator, false, request.build(),
-                        new CallGenerator<writeRequest, OSDWriteResponse>() {
+                try {
+                    response = RPCCaller.<writeRequest, OSDWriteResponse> syncCall(SERVICES.OSD, userCredentials,
+                            authBogus, volumeOptions, uuidResolver, uuidIterator, false, request.build(),
+                            new CallGenerator<writeRequest, OSDWriteResponse>() {
 
-                            @Override
-                            public RPCResponse<OSDWriteResponse> executeCall(InetSocketAddress server, Auth authHeader,
-                                    UserCredentials userCreds, writeRequest input) throws IOException {
+                                @Override
+                                public RPCResponse<OSDWriteResponse> executeCall(InetSocketAddress server,
+                                        Auth authHeader, UserCredentials userCreds, writeRequest input)
+                                        throws IOException {
 
-                                return osdServiceClient.write(server, authHeader, userCreds, input,
-                                        writeDataBuffer.createViewBuffer());
-                            }
-                        });
+                                    return osdServiceClient.write(server, authHeader, userCreds, input,
+                                            writeDataBuffer.createViewBuffer());
+                                }
+                            });
+                } catch (PBRPCException e) {
+                    if (e.getErrorType().equals(ErrorType.CAPACITY_ERROR)) {
+
+                        // renew xcap for more capacity
+                        renewXCap();
+                        request.setFileCredentials(fileCredentials.toBuilder().setXcap(xcap).build());
+
+                        // // retry request
+                        response = RPCCaller.<writeRequest, OSDWriteResponse> syncCall(SERVICES.OSD, userCredentials,
+                                authBogus, volumeOptions, uuidResolver, uuidIterator, false, request.build(),
+                                new CallGenerator<writeRequest, OSDWriteResponse>() {
+
+                                    @Override
+                                    public RPCResponse<OSDWriteResponse> executeCall(InetSocketAddress server,
+                                            Auth authHeader, UserCredentials userCreds, writeRequest input)
+                                            throws IOException {
+
+                                        return osdServiceClient.write(server, authHeader, userCreds, input,
+                                                writeDataBuffer.createViewBuffer());
+                                    }
+                                });
+                    } else {
+                        throw e;
+                    }
+                }
+
 
                 assert (response != null);
 
@@ -959,7 +989,7 @@ public class FileHandleImplementation implements FileHandle, AdminFileHandle {
             // TODO: Cope with local clocks which have high clock skew.
             if (Logging.isDebug()) {
                 Logging.logMessage(Logging.LEVEL_DEBUG, Category.misc, this,
-                        "Renew SCap for fileId: %s  Expiration in: %s", Helper.extractFileIdFromXcap(xcap),
+                        "Renew XCap for fileId: %s  Expiration in: %s", Helper.extractFileIdFromXcap(xcap),
                         xcap.getExpireTimeoutS() - System.currentTimeMillis() / 1000);
             }
             xcapCopy = this.xcap.toBuilder().build();
@@ -994,6 +1024,52 @@ public class FileHandleImplementation implements FileHandle, AdminFileHandle {
                 }
             }
         });
+    }
+
+    protected void renewXCap() throws IOException, AddressToUUIDNotFoundException, PosixErrorException {
+
+        XCap xcapCopy;
+
+        synchronized (this) {
+            if (Logging.isDebug()) {
+                Logging.logMessage(Logging.LEVEL_DEBUG, Category.misc, this,
+                        "Renew XCap for fileId: %s  Expiration in: %s", Helper.extractFileIdFromXcap(xcap),
+                        xcap.getExpireTimeoutS() - System.currentTimeMillis() / 1000);
+            }
+            xcapCopy = this.xcap.toBuilder().build();
+
+            synchronized (xcapRenewalPendingLock) {
+                xcapRenewalPending = true;
+            }
+        }
+
+        String address = uuidResolver.uuidToAddress(mrcUuidIterator.getUUID());
+        InetSocketAddress server = RPCCaller.getInetSocketAddressFromAddress(address, SERVICES.MRC);
+        RPCResponse<XCap> r = mrcServiceClient.xtreemfs_renew_capability(server, authBogus, userCredentialsBogus,
+                xcapCopy);
+        try {
+            XCap newXCap = r.get();
+            setRenewedXcap(newXCap);
+        } catch (PBRPCException e) {
+            if (Logging.isDebug()) {
+                Logging.logMessage(Logging.LEVEL_DEBUG, this, "renewXcapAsync: Renewing XCap"
+                        + " of file %s failed. Error: %s", fileInfo.getPath(), e.getMessage());
+            }
+            if (e.getPOSIXErrno().equals(POSIXErrno.POSIX_ERROR_ENOSPC)) {
+                throw new PosixErrorException(POSIXErrno.POSIX_ERROR_ENOSPC, e.getMessage());
+            }
+        } catch (Exception e) {
+            if (Logging.isDebug()) {
+                Logging.logMessage(Logging.LEVEL_DEBUG, this, "renewXcapAsync: Renewing XCap"
+                        + " of file %s failed. Error: %s", fileInfo.getPath(), e.getMessage());
+            }
+        } finally {
+            r.freeBuffers();
+            synchronized (xcapRenewalPendingLock) {
+                xcapRenewalPending = false;
+                xcapRenewalPendingLock.notifyAll();
+            }
+        }
     }
 
     private void setRenewedXcap(XCap newXCap) {

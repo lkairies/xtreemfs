@@ -131,6 +131,12 @@ public class RPCCaller {
                         it.markUUIDAsFailed(it.getUUID());
                         continue;
                     }
+
+                    // if (pbe.getErrorType().equals(ErrorType.CAPACITY_ERROR)) {
+                    // // cancel request
+                    // throw pbe;
+                    // }
+
                     // Retry (and delay) only if at least one retry is left
                     if (((attempt < maxTries || maxTries == 0) ||
                     // or this last retry should be delayed
@@ -199,8 +205,12 @@ public class RPCCaller {
                 return response;
             }
         } catch (PBRPCException e) {
-            // Max attempts reached or non-IO error seen. Throw an exception.
-            handleErrorAfterMaxTriesExceeded(e, it);
+            if (e.getErrorType().equals(ErrorType.CAPACITY_ERROR)) {
+                throw e;
+            } else {
+                // Max attempts reached or non-IO error seen. Throw an exception.
+                handleErrorAfterMaxTriesExceeded(e, it);
+            }
         }
         return null;
     }
