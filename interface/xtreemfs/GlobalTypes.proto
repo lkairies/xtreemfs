@@ -162,6 +162,9 @@ message XCap {
   // indicates which version (snapshot) of the file should be used
   // on the OSD.
   required fixed64 snap_timestamp = 10;
+  // Write Capacity the client can write before the XCap must
+  // be renewed
+  optional fixed64 write_capacity = 11;
 }
 
 // Locations of a file, i.e. the list of replicas including the OSDs that hold

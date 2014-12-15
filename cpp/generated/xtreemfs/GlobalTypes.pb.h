@@ -798,6 +798,13 @@ class XCap : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 snap_timestamp() const;
   inline void set_snap_timestamp(::google::protobuf::uint64 value);
 
+  // optional fixed64 write_capacity = 11;
+  inline bool has_write_capacity() const;
+  inline void clear_write_capacity();
+  static const int kWriteCapacityFieldNumber = 11;
+  inline ::google::protobuf::uint64 write_capacity() const;
+  inline void set_write_capacity(::google::protobuf::uint64 value);
+
   // @@protoc_insertion_point(class_scope:xtreemfs.pbrpc.XCap)
  private:
   inline void set_has_access_mode();
@@ -820,6 +827,8 @@ class XCap : public ::google::protobuf::Message {
   inline void clear_has_snap_config();
   inline void set_has_snap_timestamp();
   inline void clear_has_snap_timestamp();
+  inline void set_has_write_capacity();
+  inline void clear_has_write_capacity();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -832,10 +841,11 @@ class XCap : public ::google::protobuf::Message {
   bool replicate_on_close_;
   ::google::protobuf::uint32 truncate_epoch_;
   ::google::protobuf::uint64 snap_timestamp_;
+  ::google::protobuf::uint64 write_capacity_;
   int snap_config_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(11 + 31) / 32];
 
   friend void  protobuf_AddDesc_xtreemfs_2fGlobalTypes_2eproto();
   friend void protobuf_AssignDesc_xtreemfs_2fGlobalTypes_2eproto();
@@ -2066,6 +2076,28 @@ inline ::google::protobuf::uint64 XCap::snap_timestamp() const {
 inline void XCap::set_snap_timestamp(::google::protobuf::uint64 value) {
   set_has_snap_timestamp();
   snap_timestamp_ = value;
+}
+
+// optional fixed64 write_capacity = 11;
+inline bool XCap::has_write_capacity() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void XCap::set_has_write_capacity() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void XCap::clear_has_write_capacity() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void XCap::clear_write_capacity() {
+  write_capacity_ = GOOGLE_ULONGLONG(0);
+  clear_has_write_capacity();
+}
+inline ::google::protobuf::uint64 XCap::write_capacity() const {
+  return write_capacity_;
+}
+inline void XCap::set_write_capacity(::google::protobuf::uint64 value) {
+  set_has_write_capacity();
+  write_capacity_ = value;
 }
 
 // -------------------------------------------------------------------

@@ -93,6 +93,8 @@ enum ErrorType {
     ERRNO = 6;
     // Server redirects to another server implementing the same interface.
     REDIRECT = 7;
+    // Not enough capacity for write request
+    CAPACITY_ERROR = 8;
     // Generic IO_ERROR to be used by the RPC implementation.
     IO_ERROR = 100;
 }

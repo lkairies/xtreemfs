@@ -4437,6 +4437,26 @@ public final class GlobalTypes {
      * </pre>
      */
     long getSnapTimestamp();
+
+    // optional fixed64 write_capacity = 11;
+    /**
+     * <code>optional fixed64 write_capacity = 11;</code>
+     *
+     * <pre>
+     * Write Capacity the client can write before the XCap must
+     * be renewed
+     * </pre>
+     */
+    boolean hasWriteCapacity();
+    /**
+     * <code>optional fixed64 write_capacity = 11;</code>
+     *
+     * <pre>
+     * Write Capacity the client can write before the XCap must
+     * be renewed
+     * </pre>
+     */
+    long getWriteCapacity();
   }
   /**
    * Protobuf type {@code xtreemfs.pbrpc.XCap}
@@ -4551,6 +4571,11 @@ public final class GlobalTypes {
             case 81: {
               bitField0_ |= 0x00000200;
               snapTimestamp_ = input.readFixed64();
+              break;
+            }
+            case 89: {
+              bitField0_ |= 0x00000400;
+              writeCapacity_ = input.readFixed64();
               break;
             }
           }
@@ -4934,6 +4959,32 @@ public final class GlobalTypes {
       return snapTimestamp_;
     }
 
+    // optional fixed64 write_capacity = 11;
+    public static final int WRITE_CAPACITY_FIELD_NUMBER = 11;
+    private long writeCapacity_;
+    /**
+     * <code>optional fixed64 write_capacity = 11;</code>
+     *
+     * <pre>
+     * Write Capacity the client can write before the XCap must
+     * be renewed
+     * </pre>
+     */
+    public boolean hasWriteCapacity() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    /**
+     * <code>optional fixed64 write_capacity = 11;</code>
+     *
+     * <pre>
+     * Write Capacity the client can write before the XCap must
+     * be renewed
+     * </pre>
+     */
+    public long getWriteCapacity() {
+      return writeCapacity_;
+    }
+
     private void initFields() {
       accessMode_ = 0;
       clientIdentity_ = "";
@@ -4945,6 +4996,7 @@ public final class GlobalTypes {
       truncateEpoch_ = 0;
       snapConfig_ = org.xtreemfs.pbrpc.generatedinterfaces.GlobalTypes.SnapConfig.SNAP_CONFIG_SNAPS_DISABLED;
       snapTimestamp_ = 0L;
+      writeCapacity_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5028,6 +5080,9 @@ public final class GlobalTypes {
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeFixed64(10, snapTimestamp_);
       }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeFixed64(11, writeCapacity_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -5076,6 +5131,10 @@ public final class GlobalTypes {
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeFixed64Size(10, snapTimestamp_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFixed64Size(11, writeCapacity_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5221,6 +5280,8 @@ public final class GlobalTypes {
         bitField0_ = (bitField0_ & ~0x00000100);
         snapTimestamp_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000200);
+        writeCapacity_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
 
@@ -5289,6 +5350,10 @@ public final class GlobalTypes {
           to_bitField0_ |= 0x00000200;
         }
         result.snapTimestamp_ = snapTimestamp_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.writeCapacity_ = writeCapacity_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5340,6 +5405,9 @@ public final class GlobalTypes {
         }
         if (other.hasSnapTimestamp()) {
           setSnapTimestamp(other.getSnapTimestamp());
+        }
+        if (other.hasWriteCapacity()) {
+          setWriteCapacity(other.getWriteCapacity());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -6060,6 +6128,59 @@ public final class GlobalTypes {
       public Builder clearSnapTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000200);
         snapTimestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional fixed64 write_capacity = 11;
+      private long writeCapacity_ ;
+      /**
+       * <code>optional fixed64 write_capacity = 11;</code>
+       *
+       * <pre>
+       * Write Capacity the client can write before the XCap must
+       * be renewed
+       * </pre>
+       */
+      public boolean hasWriteCapacity() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      /**
+       * <code>optional fixed64 write_capacity = 11;</code>
+       *
+       * <pre>
+       * Write Capacity the client can write before the XCap must
+       * be renewed
+       * </pre>
+       */
+      public long getWriteCapacity() {
+        return writeCapacity_;
+      }
+      /**
+       * <code>optional fixed64 write_capacity = 11;</code>
+       *
+       * <pre>
+       * Write Capacity the client can write before the XCap must
+       * be renewed
+       * </pre>
+       */
+      public Builder setWriteCapacity(long value) {
+        bitField0_ |= 0x00000400;
+        writeCapacity_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional fixed64 write_capacity = 11;</code>
+       *
+       * <pre>
+       * Write Capacity the client can write before the XCap must
+       * be renewed
+       * </pre>
+       */
+      public Builder clearWriteCapacity() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        writeCapacity_ = 0L;
         onChanged();
         return this;
       }
@@ -10506,71 +10627,71 @@ public final class GlobalTypes {
       "\003(\t\022\031\n\021replication_flags\030\002 \002(\007\0227\n\017stripi" +
       "ng_policy\030\003 \002(\0132\036.xtreemfs.pbrpc.Stripin" +
       "gPolicy\"5\n\010Replicas\022)\n\010replicas\030\001 \003(\0132\027.",
-      "xtreemfs.pbrpc.Replica\"\215\002\n\004XCap\022\023\n\013acces" +
+      "xtreemfs.pbrpc.Replica\"\245\002\n\004XCap\022\023\n\013acces" +
       "s_mode\030\001 \002(\007\022\027\n\017client_identity\030\002 \002(\t\022\025\n" +
       "\rexpire_time_s\030\003 \002(\006\022\030\n\020expire_timeout_s" +
       "\030\004 \002(\007\022\017\n\007file_id\030\005 \002(\t\022\032\n\022replicate_on_" +
       "close\030\006 \002(\010\022\030\n\020server_signature\030\007 \002(\t\022\026\n" +
       "\016truncate_epoch\030\010 \002(\007\022/\n\013snap_config\030\t \002" +
       "(\0162\032.xtreemfs.pbrpc.SnapConfig\022\026\n\016snap_t" +
-      "imestamp\030\n \002(\006\"\201\001\n\007XLocSet\022\033\n\023read_only_" +
-      "file_size\030\001 \002(\006\022)\n\010replicas\030\002 \003(\0132\027.xtre" +
-      "emfs.pbrpc.Replica\022\035\n\025replica_update_pol",
-      "icy\030\003 \002(\t\022\017\n\007version\030\004 \002(\007\"]\n\017FileCreden" +
-      "tials\022\"\n\004xcap\030\001 \002(\0132\024.xtreemfs.pbrpc.XCa" +
-      "p\022&\n\005xlocs\030\002 \002(\0132\027.xtreemfs.pbrpc.XLocSe" +
-      "t\"O\n\022FileCredentialsSet\0229\n\020file_credenti" +
-      "als\030\001 \001(\0132\037.xtreemfs.pbrpc.FileCredentia" +
-      "ls\"U\n\022VivaldiCoordinates\022\024\n\014x_coordinate" +
-      "\030\001 \002(\001\022\024\n\014y_coordinate\030\002 \002(\001\022\023\n\013local_er" +
-      "ror\030\003 \002(\001\"A\n\020OSDWriteResponse\022\025\n\rsize_in" +
-      "_bytes\030\001 \001(\006\022\026\n\016truncate_epoch\030\002 \001(\007\"*\n\014" +
-      "KeyValuePair\022\013\n\003key\030\001 \002(\t\022\r\n\005value\030\002 \002(\t",
-      "*|\n\027AccessControlPolicyType\022\036\n\032ACCESS_CO" +
-      "NTROL_POLICY_NULL\020\001\022\037\n\033ACCESS_CONTROL_PO" +
-      "LICY_POSIX\020\002\022 \n\034ACCESS_CONTROL_POLICY_VO" +
-      "LUME\020\003*\365\003\n\026OSDSelectionPolicyType\022(\n#OSD" +
-      "_SELECTION_POLICY_FILTER_DEFAULT\020\350\007\022%\n O" +
-      "SD_SELECTION_POLICY_FILTER_FQDN\020\351\007\022%\n OS" +
-      "D_SELECTION_POLICY_FILTER_UUID\020\352\007\022%\n OSD" +
-      "_SELECTION_POLICY_GROUP_DCMAP\020\320\017\022$\n\037OSD_" +
-      "SELECTION_POLICY_GROUP_FQDN\020\321\017\022$\n\037OSD_SE" +
-      "LECTION_POLICY_SORT_DCMAP\020\270\027\022#\n\036OSD_SELE",
-      "CTION_POLICY_SORT_FQDN\020\271\027\022%\n OSD_SELECTI" +
-      "ON_POLICY_SORT_RANDOM\020\272\027\022&\n!OSD_SELECTIO" +
-      "N_POLICY_SORT_VIVALDI\020\273\027\022/\n*OSD_SELECTIO" +
-      "N_POLICY_SORT_HOST_ROUND_ROBIN\020\274\027\022#\n\036OSD" +
-      "_SELECTION_POLICY_SORT_UUID\020\236\037\022&\n!OSD_SE" +
-      "LECTION_POLICY_SORT_REVERSE\020\237\037*A\n\032Replic" +
-      "aSelectionPolicyType\022#\n\037REPLICA_SELECTIO" +
-      "N_POLICY_SIMPLE\020\001*i\n\nSnapConfig\022\036\n\032SNAP_" +
-      "CONFIG_SNAPS_DISABLED\020\000\022\036\n\032SNAP_CONFIG_A" +
-      "CCESS_CURRENT\020\001\022\033\n\027SNAP_CONFIG_ACCESS_SN",
-      "AP\020\002*/\n\022StripingPolicyType\022\031\n\025STRIPING_P" +
-      "OLICY_RAID0\020\000*\270\001\n\005PORTS\022\033\n\025DIR_HTTP_PORT" +
-      "_DEFAULT\020\256\357\001\022\034\n\026DIR_PBRPC_PORT_DEFAULT\020\376" +
-      "\376\001\022\033\n\025MRC_HTTP_PORT_DEFAULT\020\254\357\001\022\034\n\026MRC_P" +
-      "BRPC_PORT_DEFAULT\020\374\376\001\022\033\n\025OSD_HTTP_PORT_D" +
-      "EFAULT\020\260\357\001\022\034\n\026OSD_PBRPC_PORT_DEFAULT\020\200\377\001" +
-      "*+\n\tCONSTANTS\022\036\n\032XCAP_RENEW_INTERVAL_IN_" +
-      "MIN\020\001*\202\003\n\016SYSTEM_V_FCNTL\022\035\n\031SYSTEM_V_FCN" +
-      "TL_H_O_RDONLY\020\000\022\035\n\031SYSTEM_V_FCNTL_H_O_WR" +
-      "ONLY\020\001\022\033\n\027SYSTEM_V_FCNTL_H_O_RDWR\020\002\022\035\n\031S",
-      "YSTEM_V_FCNTL_H_O_APPEND\020\010\022\035\n\030SYSTEM_V_F" +
-      "CNTL_H_O_CREAT\020\200\002\022\035\n\030SYSTEM_V_FCNTL_H_O_" +
-      "TRUNC\020\200\004\022\034\n\027SYSTEM_V_FCNTL_H_O_EXCL\020\200\010\022\033" +
-      "\n\027SYSTEM_V_FCNTL_H_O_SYNC\020\020\022\036\n\030SYSTEM_V_" +
-      "FCNTL_H_S_IFREG\020\200\200\002\022\036\n\030SYSTEM_V_FCNTL_H_" +
-      "S_IFDIR\020\200\200\001\022\036\n\030SYSTEM_V_FCNTL_H_S_IFLNK\020" +
-      "\200\300\002\022\035\n\030SYSTEM_V_FCNTL_H_S_IFIFO\020\200 *\330\001\n\tR" +
-      "EPL_FLAG\022\032\n\026REPL_FLAG_FULL_REPLICA\020\001\022\031\n\025" +
-      "REPL_FLAG_IS_COMPLETE\020\002\022\035\n\031REPL_FLAG_STR" +
-      "ATEGY_RANDOM\020\004\022#\n\037REPL_FLAG_STRATEGY_RAR",
-      "EST_FIRST\020\010\022!\n\035REPL_FLAG_STRATEGY_SEQUEN" +
-      "TIAL\020\020\022-\n)REPL_FLAG_STRATEGY_SEQUENTIAL_" +
-      "PREFETCHING\020 *%\n\010SERVICES\022\007\n\003DIR\020\001\022\007\n\003MR" +
-      "C\020\002\022\007\n\003OSD\020\003B(\n&org.xtreemfs.pbrpc.gener" +
-      "atedinterfaces"
+      "imestamp\030\n \002(\006\022\026\n\016write_capacity\030\013 \001(\006\"\201" +
+      "\001\n\007XLocSet\022\033\n\023read_only_file_size\030\001 \002(\006\022" +
+      ")\n\010replicas\030\002 \003(\0132\027.xtreemfs.pbrpc.Repli",
+      "ca\022\035\n\025replica_update_policy\030\003 \002(\t\022\017\n\007ver" +
+      "sion\030\004 \002(\007\"]\n\017FileCredentials\022\"\n\004xcap\030\001 " +
+      "\002(\0132\024.xtreemfs.pbrpc.XCap\022&\n\005xlocs\030\002 \002(\013" +
+      "2\027.xtreemfs.pbrpc.XLocSet\"O\n\022FileCredent" +
+      "ialsSet\0229\n\020file_credentials\030\001 \001(\0132\037.xtre" +
+      "emfs.pbrpc.FileCredentials\"U\n\022VivaldiCoo" +
+      "rdinates\022\024\n\014x_coordinate\030\001 \002(\001\022\024\n\014y_coor" +
+      "dinate\030\002 \002(\001\022\023\n\013local_error\030\003 \002(\001\"A\n\020OSD" +
+      "WriteResponse\022\025\n\rsize_in_bytes\030\001 \001(\006\022\026\n\016" +
+      "truncate_epoch\030\002 \001(\007\"*\n\014KeyValuePair\022\013\n\003",
+      "key\030\001 \002(\t\022\r\n\005value\030\002 \002(\t*|\n\027AccessContro" +
+      "lPolicyType\022\036\n\032ACCESS_CONTROL_POLICY_NUL" +
+      "L\020\001\022\037\n\033ACCESS_CONTROL_POLICY_POSIX\020\002\022 \n\034" +
+      "ACCESS_CONTROL_POLICY_VOLUME\020\003*\365\003\n\026OSDSe" +
+      "lectionPolicyType\022(\n#OSD_SELECTION_POLIC" +
+      "Y_FILTER_DEFAULT\020\350\007\022%\n OSD_SELECTION_POL" +
+      "ICY_FILTER_FQDN\020\351\007\022%\n OSD_SELECTION_POLI" +
+      "CY_FILTER_UUID\020\352\007\022%\n OSD_SELECTION_POLIC" +
+      "Y_GROUP_DCMAP\020\320\017\022$\n\037OSD_SELECTION_POLICY" +
+      "_GROUP_FQDN\020\321\017\022$\n\037OSD_SELECTION_POLICY_S",
+      "ORT_DCMAP\020\270\027\022#\n\036OSD_SELECTION_POLICY_SOR" +
+      "T_FQDN\020\271\027\022%\n OSD_SELECTION_POLICY_SORT_R" +
+      "ANDOM\020\272\027\022&\n!OSD_SELECTION_POLICY_SORT_VI" +
+      "VALDI\020\273\027\022/\n*OSD_SELECTION_POLICY_SORT_HO" +
+      "ST_ROUND_ROBIN\020\274\027\022#\n\036OSD_SELECTION_POLIC" +
+      "Y_SORT_UUID\020\236\037\022&\n!OSD_SELECTION_POLICY_S" +
+      "ORT_REVERSE\020\237\037*A\n\032ReplicaSelectionPolicy" +
+      "Type\022#\n\037REPLICA_SELECTION_POLICY_SIMPLE\020" +
+      "\001*i\n\nSnapConfig\022\036\n\032SNAP_CONFIG_SNAPS_DIS" +
+      "ABLED\020\000\022\036\n\032SNAP_CONFIG_ACCESS_CURRENT\020\001\022",
+      "\033\n\027SNAP_CONFIG_ACCESS_SNAP\020\002*/\n\022Striping" +
+      "PolicyType\022\031\n\025STRIPING_POLICY_RAID0\020\000*\270\001" +
+      "\n\005PORTS\022\033\n\025DIR_HTTP_PORT_DEFAULT\020\256\357\001\022\034\n\026" +
+      "DIR_PBRPC_PORT_DEFAULT\020\376\376\001\022\033\n\025MRC_HTTP_P" +
+      "ORT_DEFAULT\020\254\357\001\022\034\n\026MRC_PBRPC_PORT_DEFAUL" +
+      "T\020\374\376\001\022\033\n\025OSD_HTTP_PORT_DEFAULT\020\260\357\001\022\034\n\026OS" +
+      "D_PBRPC_PORT_DEFAULT\020\200\377\001*+\n\tCONSTANTS\022\036\n" +
+      "\032XCAP_RENEW_INTERVAL_IN_MIN\020\001*\202\003\n\016SYSTEM" +
+      "_V_FCNTL\022\035\n\031SYSTEM_V_FCNTL_H_O_RDONLY\020\000\022" +
+      "\035\n\031SYSTEM_V_FCNTL_H_O_WRONLY\020\001\022\033\n\027SYSTEM",
+      "_V_FCNTL_H_O_RDWR\020\002\022\035\n\031SYSTEM_V_FCNTL_H_" +
+      "O_APPEND\020\010\022\035\n\030SYSTEM_V_FCNTL_H_O_CREAT\020\200" +
+      "\002\022\035\n\030SYSTEM_V_FCNTL_H_O_TRUNC\020\200\004\022\034\n\027SYST" +
+      "EM_V_FCNTL_H_O_EXCL\020\200\010\022\033\n\027SYSTEM_V_FCNTL" +
+      "_H_O_SYNC\020\020\022\036\n\030SYSTEM_V_FCNTL_H_S_IFREG\020" +
+      "\200\200\002\022\036\n\030SYSTEM_V_FCNTL_H_S_IFDIR\020\200\200\001\022\036\n\030S" +
+      "YSTEM_V_FCNTL_H_S_IFLNK\020\200\300\002\022\035\n\030SYSTEM_V_" +
+      "FCNTL_H_S_IFIFO\020\200 *\330\001\n\tREPL_FLAG\022\032\n\026REPL" +
+      "_FLAG_FULL_REPLICA\020\001\022\031\n\025REPL_FLAG_IS_COM" +
+      "PLETE\020\002\022\035\n\031REPL_FLAG_STRATEGY_RANDOM\020\004\022#",
+      "\n\037REPL_FLAG_STRATEGY_RAREST_FIRST\020\010\022!\n\035R" +
+      "EPL_FLAG_STRATEGY_SEQUENTIAL\020\020\022-\n)REPL_F" +
+      "LAG_STRATEGY_SEQUENTIAL_PREFETCHING\020 *%\n" +
+      "\010SERVICES\022\007\n\003DIR\020\001\022\007\n\003MRC\020\002\022\007\n\003OSD\020\003B(\n&" +
+      "org.xtreemfs.pbrpc.generatedinterfaces"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -10606,7 +10727,7 @@ public final class GlobalTypes {
           internal_static_xtreemfs_pbrpc_XCap_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_xtreemfs_pbrpc_XCap_descriptor,
-              new java.lang.String[] { "AccessMode", "ClientIdentity", "ExpireTimeS", "ExpireTimeoutS", "FileId", "ReplicateOnClose", "ServerSignature", "TruncateEpoch", "SnapConfig", "SnapTimestamp", });
+              new java.lang.String[] { "AccessMode", "ClientIdentity", "ExpireTimeS", "ExpireTimeoutS", "FileId", "ReplicateOnClose", "ServerSignature", "TruncateEpoch", "SnapConfig", "SnapTimestamp", "WriteCapacity", });
           internal_static_xtreemfs_pbrpc_XLocSet_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_xtreemfs_pbrpc_XLocSet_fieldAccessorTable = new
