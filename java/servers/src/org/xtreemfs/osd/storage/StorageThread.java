@@ -49,6 +49,7 @@ import org.xtreemfs.osd.stages.StorageStage.TruncateCallback;
 import org.xtreemfs.osd.stages.StorageStage.WriteObjectCallback;
 import org.xtreemfs.osd.storage.VersionTable.Version;
 import org.xtreemfs.pbrpc.generatedinterfaces.GlobalTypes.OSDWriteResponse;
+import org.xtreemfs.pbrpc.generatedinterfaces.GlobalTypes.XCap;
 import org.xtreemfs.pbrpc.generatedinterfaces.OSD.InternalGmax;
 import org.xtreemfs.pbrpc.generatedinterfaces.OSD.ObjectVersion;
 import org.xtreemfs.pbrpc.generatedinterfaces.OSD.ReplicaStatus;
@@ -491,6 +492,18 @@ public class StorageThread extends Stage {
                     POSIXErrno.POSIX_ERROR_EINVAL, "offset+data.length must be <= stripe size (offset="
                         + offset + " data.length=" + dataCapacity + " stripe size=" + stripeSize + ")"));
                 return;
+            }
+
+            //check write capacity
+            XCap xCap = rq.getRequest().getCapability().getXCap();
+            if (xCap.hasWriteCapacity()) {
+                long fileSizeDifference = objNo * stripeSize + offset + dataLength - fi.getFilesize();
+                if (fileSizeDifference > 0 && !master.checkWriteCapacity(xCap, fileSizeDifference)) {
+                    BufferPool.free(data);
+                    cback.writeComplete(null, ErrorUtils.getErrorResponse(ErrorType.CAPACITY_ERROR,
+                            POSIXErrno.POSIX_ERROR_EIO, "write capacity exceeded"));
+                    return;
+                }
             }
             
             // assign the number of objects to the COW policy if necessary (this

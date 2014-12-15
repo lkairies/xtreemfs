@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -116,6 +117,7 @@ import org.xtreemfs.pbrpc.generatedinterfaces.DIR.ServiceType;
 import org.xtreemfs.pbrpc.generatedinterfaces.DIRServiceClient;
 import org.xtreemfs.pbrpc.generatedinterfaces.GlobalTypes.KeyValuePair;
 import org.xtreemfs.pbrpc.generatedinterfaces.GlobalTypes.VivaldiCoordinates;
+import org.xtreemfs.pbrpc.generatedinterfaces.GlobalTypes.XCap;
 import org.xtreemfs.pbrpc.generatedinterfaces.MRCServiceClient;
 import org.xtreemfs.pbrpc.generatedinterfaces.OSDServiceClient;
 import org.xtreemfs.pbrpc.generatedinterfaces.OSDServiceConstants;
@@ -188,6 +190,8 @@ public class OSDRequestDispatcher implements RPCServerRequestListener, LifeCycle
      */
     private final ServiceAvailability                   serviceAvailability;
     
+    private Map<XCap, Long>                             xCapWriteCapacities = new ConcurrentHashMap<XCap, Long>();
+
     public OSDRequestDispatcher(final OSDConfig config) throws Exception {
         
         Logging.logMessage(Logging.LEVEL_INFO, this, "XtreemFS OSD version "
@@ -1045,4 +1049,39 @@ public class OSDRequestDispatcher implements RPCServerRequestListener, LifeCycle
         return rwrStage.getPrimary(fileId);
     }
 
+    /**
+     * Checks if XCap has enough write capacity and updates write Capacity accordingly.
+     * 
+     * @param xCap
+     * @return
+     */
+    public boolean checkWriteCapacity(XCap xCap, long writeSize) {
+
+        // check if xCap is already stored
+        if (xCapWriteCapacities.containsKey(xCap)) {
+            
+            // check if enough write capacity is available
+            long writeCapacity = xCapWriteCapacities.get(xCap);
+            if (writeCapacity >= writeSize) {
+                //store updated write capacity
+                xCapWriteCapacities.put(xCap, writeCapacity - writeSize);
+                return true;
+            } else {
+                // not enough write capacity for request
+                return false;
+            }
+        } else {
+            long writeCapacity = xCap.getWriteCapacity();
+
+            // store xCap for later requests
+            if (writeCapacity >= writeSize) {
+                xCapWriteCapacities.put(xCap, writeCapacity - writeSize);
+                return true;
+            } else {
+                xCapWriteCapacities.put(xCap, writeCapacity);
+                return false;
+            }
+
+        }
+    }
 }
